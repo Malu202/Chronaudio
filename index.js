@@ -40,28 +40,28 @@ async function setup() {
     setupBuffers(analyser)
 
     function analyze() {
-        let analyseTime = +new Date();
+        let analyseTime = performance.now();
         analyser.getByteTimeDomainData(dataArray);
-        analyseTime = new Date() - analyseTime;
+        analyseTime = performance.now() - analyseTime;
         if (gainSlider.value != 1) {
             for (let i = 0; i < dataArray.length; i++) {
                 dataArray[i] = (dataArray[i] - 128) * gainSlider.value + 128;
             }
         }
-        let offsetTime = +new Date();
+        let offsetTime = performance.now();
         let offset = getNewBufferOffset(dataArray, drawnData.subarray(bufferLength * (zoom - 1)));
-        offsetTime = new Date() - offsetTime;
+        offsetTime = performance.now() - offsetTime;
         drawnData.set(drawnData.subarray(offset), 0)
         drawnData.set(dataArray, bufferLength * (zoom - 1));
 
         let drawTime;
-        let triggerTime = +new Date();
+        let triggerTime = performance.now();
         if (!stopped) {
             stopped = checkTriggers(drawnData, dataArray, offset);
-            triggerTime = new Date() - triggerTime;
-            drawTime = +new Date();
+            triggerTime = performance.now() - triggerTime;
+            drawTime = performance.now();
             draw(drawnData);
-            drawTime = new Date() - drawTime;
+            drawTime = performance.now() - drawTime;
             let a = 0;
         } else {
             let velocity = calculateVelocity();
@@ -174,9 +174,10 @@ function checkTriggers(drawndata, sample, offset) {
 function getNewBufferOffset(newData, oldData) {
     let offset = 0;
     for (let i = 0; i < oldData.length; i += 128) {
+        let remainingDataLength = newData.length - i - 1;
         for (let j = 0; j < newData.length - i; j++) {
             if (newData[j] != oldData[j + i]) break;
-            if (j == newData.length - i - 1) offset = i;
+            if (j == remainingDataLength) offset = i;
         }
     }
     return offset;
