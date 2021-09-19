@@ -42,12 +42,12 @@ async function setup() {
     function analyze() {
         let analyseTime = performance.now();
         analyser.getByteTimeDomainData(dataArray);
-        analyseTime = performance.now() - analyseTime;
         if (gainSlider.value != 1) {
             for (let i = 0; i < dataArray.length; i++) {
                 dataArray[i] = (dataArray[i] - 128) * gainSlider.value + 128;
             }
         }
+        analyseTime = performance.now() - analyseTime;
         let offsetTime = performance.now();
         let offset = getNewBufferOffset(dataArray, drawnData.subarray(bufferLength * (zoom - 1)));
         offsetTime = performance.now() - offsetTime;
@@ -172,7 +172,7 @@ function checkTriggers(drawndata, sample, offset) {
 }
 
 function getNewBufferOffset(newData, oldData) {
-    let offset = 0;
+    let offset = newData.length;
     for (let i = 0; i < oldData.length; i += 128) {
         let remainingDataLength = newData.length - i - 1;
         for (let j = 0; j < newData.length - i; j++) {
