@@ -40,6 +40,7 @@ async function setup() {
     setupBuffers(analyser)
 
     function analyze() {
+        let totalCalculationTime = performance.now();
         let analyseTime = performance.now();
         analyser.getByteTimeDomainData(dataArray);
         if (gainSlider.value != 1) {
@@ -72,6 +73,7 @@ async function setup() {
         }
         let duration = performance.now() - frameTime;
         frameTime = performance.now();
+        let totalCalculationTime = performance.now() - totalCalculationTime;
         requestAnimationFrame(analyze);
     }
     analyze();
