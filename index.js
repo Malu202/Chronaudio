@@ -70,10 +70,13 @@ async function setup() {
             resumeButton.style.display = "inline-block";
             return;
         }
+        let duration = performance.now() - frameTime;
+        frameTime = performance.now();
         requestAnimationFrame(analyze);
     }
     analyze();
 }
+let frameTime = performance.now();
 
 function resume() {
     trigger1Index = null;
