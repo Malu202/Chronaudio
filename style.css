@@ -21,3 +21,7 @@ padding: 0 5px; */
 #drawingLine>input {
     min-height: 100%;
 }
+
+#resumeButton {
+    display: none;
+}

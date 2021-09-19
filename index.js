@@ -11,8 +11,6 @@ let temperatureInput = document.getElementById("temperatureInput");
 let maxSpeedInput = document.getElementById("maxSpeedInput");
 let gainSlider = document.getElementById("gainSlider");
 
-// navigator.getUserMedia = navigator.getUserMedia || navigator.webkitGetUserMedia || navigator.mozGetUserMedia;
-// navigator.getUserMedia({ video: false, audio: true }, callback, console.log);
 let ctx, mic, analyser;
 
 let zoom = 10;
@@ -22,9 +20,9 @@ let drawnData;
 let dataArray;
 let stopped = false;
 
-startInput();
+setup();
 let minimumDelay;
-async function startInput() {
+async function setup() {
     let stream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
     canvas.width = canvas.clientWidth;
     canvas.height = canvas.clientHeight;
@@ -38,6 +36,7 @@ async function startInput() {
 
     audioZoom.addEventListener("change", function () { setupBuffers(analyser); });
     audioZoom.addEventListener("input", function () { audioZoomLabel.innerText = audioZoom.value; })
+    audioZoomLabel.innerText = audioZoom.value;
     setupBuffers(analyser)
 
     function analyze() {
@@ -49,7 +48,6 @@ async function startInput() {
         }
         let offset = getNewBufferOffset(dataArray, drawnData.subarray(bufferLength * (zoom - 1)));
         drawnData.set(drawnData.subarray(offset), 0)
-        // drawnData.set(dataArray, bufferLength * (zoom - 1));
         drawnData.set(dataArray, bufferLength * (zoom - 1));
 
         if (!stopped) {
@@ -57,8 +55,9 @@ async function startInput() {
             draw(drawnData);
         } else {
             let velocity = calculateVelocity();
-            results.innerText += Math.round(velocity) + " ft/s, " + Math.round(velocity * 0.3048) + " m/s" + '\n';
+            results.innerText = Math.round(velocity) + " ft/s, " + Math.round(velocity * 0.3048) + " m/s" + '\n' + results.innerText;
             resumeButton.onclick = function () { resumeButton.onclick = null; resume(); analyze(); }
+            resumeButton.style.display = "inline-block";
             return;
         }
         requestAnimationFrame(analyze);
@@ -70,6 +69,7 @@ function resume() {
     trigger1Index = null;
     trigger2Index = null;
     stopped = false;
+    resumeButton.style.display = "none";
 }
 function setupBuffers(analyser) {
     bufferLength = analyser.fftSize;
@@ -190,4 +190,33 @@ function calculateVelocity() {
     console.log("Total time: " + totalTime);
     return arrowVelocityImperial;
 }
-console.log("Expected Total time: " + (1 / (231 / 60)))
+//console.log("Expected Total time: " + (1 / (231 / 60)))
+function saveInputValues() {
+    let settings = {
+        audioZoom: audioZoom.value,
+        trigger1Slider: trigger1Slider.value,
+        trigger2Slider: trigger2Slider.value,
+        distanceInput: distanceInput.value,
+        temperatureInput: temperatureInput.value,
+        maxSpeedInput: maxSpeedInput.value,
+        gainSlider: gainSlider.value
+    };
+
+    localStorage.setItem('ChronaudioSettings', JSON.stringify(settings));
+}
+
+function loadInputValues() {
+    let settings = JSON.parse(localStorage.getItem('ChronaudioSettings'));
+    if (!settings) return;
+    audioZoom.value = settings.audioZoom;
+    trigger1Slider.value = settings.trigger1Slider;
+    trigger2Slider.value = settings.trigger2Slider;
+    distanceInput.value = settings.distanceInput;
+    temperatureInput.value = settings.temperatureInput;
+    maxSpeedInput.value = settings.maxSpeedInput;
+    gainSlider.value = settings.gainSlider;
+}
+loadInputValues();
+
+let inputs = document.getElementsByTagName("input");
+for (let i = 0; i < inputs.length; i++) { inputs[i].addEventListener("change", saveInputValues) };
