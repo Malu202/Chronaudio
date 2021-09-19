@@ -40,19 +40,29 @@ async function setup() {
     setupBuffers(analyser)
 
     function analyze() {
+        let analyseTime = +new Date();
         analyser.getByteTimeDomainData(dataArray);
+        analyseTime = new Date() - analyseTime;
         if (gainSlider.value != 1) {
             for (let i = 0; i < dataArray.length; i++) {
                 dataArray[i] = (dataArray[i] - 128) * gainSlider.value + 128;
             }
         }
+        let offsetTime = +new Date();
         let offset = getNewBufferOffset(dataArray, drawnData.subarray(bufferLength * (zoom - 1)));
+        offsetTime = new Date() - offsetTime;
         drawnData.set(drawnData.subarray(offset), 0)
         drawnData.set(dataArray, bufferLength * (zoom - 1));
 
+        let drawTime;
+        let triggerTime = +new Date();
         if (!stopped) {
             stopped = checkTriggers(drawnData, dataArray, offset);
+            triggerTime = new Date() - triggerTime;
+            drawTime = +new Date();
             draw(drawnData);
+            drawTime = new Date() - drawTime;
+            let a = 0;
         } else {
             let velocity = calculateVelocity();
             results.innerText = Math.round(velocity) + " ft/s, " + Math.round(velocity * 0.3048) + " m/s" + '\n' + results.innerText;
