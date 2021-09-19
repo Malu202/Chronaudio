@@ -73,7 +73,7 @@ async function setup() {
         }
         let duration = performance.now() - frameTime;
         frameTime = performance.now();
-        let totalCalculationTime = performance.now() - totalCalculationTime;
+        totalCalculationTime = performance.now() - totalCalculationTime;
         requestAnimationFrame(analyze);
     }
     analyze();
