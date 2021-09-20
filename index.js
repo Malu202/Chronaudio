@@ -50,7 +50,7 @@ async function setup() {
     function analyze() {
         let totalCalculationTime = performance.now();
         let analyseTime = performance.now();
-        //analyser.getByteTimeDomainData(dataArray);
+        analyser.getByteTimeDomainData(dataArray);
         if (gainSlider.value != 1) {
             for (let i = 0; i < dataArray.length; i++) {
                 dataArray[i] = (dataArray[i] - 128) * gainSlider.value + 128;
@@ -115,6 +115,7 @@ function draw2(drawnData) {
     let datapointsPerPixel = drawnData.length / canvas.width;
     let x = 0;
     context2d.beginPath();
+
     for (let iGenau = 0; iGenau < drawnData.length; iGenau += datapointsPerPixel) {
         let i = Math.round(iGenau);
 
@@ -163,22 +164,23 @@ function draw(drawnData, offset) {
 
     let x = canvas.width - pixelShift;
     context2d.beginPath();
-    for (let iGenau = drawnData.length - offset; iGenau < drawnData.length; iGenau += datapointsPerPixel) {
-        let i = Math.round(iGenau);
+    // for (let iGenau = drawnData.length - offset; iGenau < drawnData.length; iGenau += datapointsPerPixel) {
+    //     let i = Math.round(iGenau);
 
-        let v = 0;
-        for (let j = 0; j < datapointsPerPixel; j++) {
-            let volume = Math.abs(drawnData[i + j] - 128);
-            if (volume > v) v = volume;
-        }
-        v = v / 128.0;
-        const y = canvas.height - v * canvas.height;
+    //     let v = 0;
+    //     for (let j = 0; j < datapointsPerPixel; j++) {
+    //         let volume = Math.abs(drawnData[i + j] - 128);
+    //         if (volume > v) v = volume;
+    //     }
+    //     v = v / 128.0;
+    //     const y = canvas.height - v * canvas.height;
 
-        if (i === 0) context2d.moveTo(x, y);
-        else context2d.lineTo(x, y);
-        x++;
-    }
-    //context2d.lineTo(canvas.width, canvas.height);
+    //     if (i === 0) context2d.moveTo(x, y);
+    //     else context2d.lineTo(x, y);
+    //     x++;
+    // }
+    context2d.moveTo(x, canvas.height);
+    context2d.lineTo(canvas.width, 0)
     context2d.stroke();
 }
 function drawTriggerAtIndex(index, datapointsPerPixel) {
