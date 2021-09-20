@@ -150,8 +150,8 @@ function draw2(drawnData) {
     context2d.stroke();
 }
 function draw(drawnData, offset) {
-    return;
     context2d.fillStyle = 'rgb(200, 200, 200)';
+    return;
     context2d.strokeStyle = 'rgb(0, 0, 0)';
     //context2d.fillRect(0, 0, canvas.width, canvas.height);
 
