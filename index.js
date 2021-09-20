@@ -150,6 +150,7 @@ function draw2(drawnData) {
     context2d.stroke();
 }
 function draw(drawnData, offset) {
+    return;
     context2d.fillStyle = 'rgb(200, 200, 200)';
     context2d.strokeStyle = 'rgb(0, 0, 0)';
     //context2d.fillRect(0, 0, canvas.width, canvas.height);
@@ -157,11 +158,6 @@ function draw(drawnData, offset) {
     let datapointsPerPixel = drawnData.length / canvas.width;
     let pixelShift = Math.round(offset / datapointsPerPixel);
 
-    let y = canvas.height * drawnData[drawnData.length - 1] / 128;
-    context2d.moveTo(0, y);
-    context2d.lineTo(canvas.width, y);
-    context2d.stroke();
-    return;
     if (pixelShift < canvas.width) {
         let imageData = context2d.getImageData(pixelShift, 0, canvas.width - pixelShift, canvas.height);
         context2d.putImageData(imageData, 0, 0);
