@@ -48,7 +48,6 @@ async function setup() {
     setupBuffers(analyser)
 
     function analyze() {
-        if (!stopped) requestAnimationFrame(analyze);
         let totalCalculationTime = performance.now();
         let analyseTime = performance.now();
         analyser.getByteTimeDomainData(dataArray);
@@ -84,7 +83,8 @@ async function setup() {
         let duration = performance.now() - frameTime;
         frameTime = performance.now();
         totalCalculationTime = performance.now() - totalCalculationTime;
-
+        // requestAnimationFrame(analyze);
+        setTimeout(analyze, 1 / 60);
     }
     analyze();
 }
