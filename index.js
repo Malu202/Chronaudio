@@ -50,7 +50,7 @@ async function setup() {
     function analyze() {
         let totalCalculationTime = performance.now();
         let analyseTime = performance.now();
-        analyser.getByteTimeDomainData(dataArray);
+        //analyser.getByteTimeDomainData(dataArray);
         if (gainSlider.value != 1) {
             for (let i = 0; i < dataArray.length; i++) {
                 dataArray[i] = (dataArray[i] - 128) * gainSlider.value + 128;
