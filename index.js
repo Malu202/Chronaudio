@@ -156,6 +156,8 @@ function draw(drawnData, offset) {
 
     let datapointsPerPixel = drawnData.length / canvas.width;
     let pixelShift = Math.round(offset / datapointsPerPixel);
+    context2d.moveTo(0, drawnData[drawnData.length - 1] / 128 + canvas.height / 2);
+    return;
     if (pixelShift < canvas.width) {
         let imageData = context2d.getImageData(pixelShift, 0, canvas.width - pixelShift, canvas.height);
         context2d.putImageData(imageData, 0, 0);
@@ -164,23 +166,22 @@ function draw(drawnData, offset) {
 
     let x = canvas.width - pixelShift;
     context2d.beginPath();
-    // for (let iGenau = drawnData.length - offset; iGenau < drawnData.length; iGenau += datapointsPerPixel) {
-    //     let i = Math.round(iGenau);
+    for (let iGenau = drawnData.length - offset; iGenau < drawnData.length; iGenau += datapointsPerPixel) {
+        let i = Math.round(iGenau);
 
-    //     let v = 0;
-    //     for (let j = 0; j < datapointsPerPixel; j++) {
-    //         let volume = Math.abs(drawnData[i + j] - 128);
-    //         if (volume > v) v = volume;
-    //     }
-    //     v = v / 128.0;
-    //     const y = canvas.height - v * canvas.height;
+        let v = 0;
+        for (let j = 0; j < datapointsPerPixel; j++) {
+            let volume = Math.abs(drawnData[i + j] - 128);
+            if (volume > v) v = volume;
+        }
+        v = v / 128.0;
+        const y = canvas.height - v * canvas.height;
 
-    //     if (i === 0) context2d.moveTo(x, y);
-    //     else context2d.lineTo(x, y);
-    //     x++;
-    // }
-    context2d.moveTo(x, canvas.height);
-    context2d.lineTo(canvas.width, 0)
+        if (i === 0) context2d.moveTo(x, y);
+        else context2d.lineTo(x, y);
+        x++;
+    }
+    //context2d.lineTo(canvas.width, canvas.height);
     context2d.stroke();
 }
 function drawTriggerAtIndex(index, datapointsPerPixel) {
