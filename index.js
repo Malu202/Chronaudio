@@ -26,7 +26,11 @@ async function setup() {
     let stream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
     canvas.width = canvas.clientWidth;
     canvas.height = canvas.clientHeight;
-    ctx = new AudioContext();
+    // ctx = new AudioContext();
+    ctx = new AudioContext({
+        latencyHint: 0.02
+    });
+    console.log(ctx.baseLatency)
     mic = ctx.createMediaStreamSource(stream);
     analyser = ctx.createAnalyser();
 
