@@ -151,12 +151,12 @@ function draw2(drawnData) {
 }
 function draw(drawnData, offset) {
     context2d.fillStyle = 'rgb(200, 200, 200)';
-    return;
     context2d.strokeStyle = 'rgb(0, 0, 0)';
     //context2d.fillRect(0, 0, canvas.width, canvas.height);
 
     let datapointsPerPixel = drawnData.length / canvas.width;
     let pixelShift = Math.round(offset / datapointsPerPixel);
+    return;
 
     if (pixelShift < canvas.width) {
         let imageData = context2d.getImageData(pixelShift, 0, canvas.width - pixelShift, canvas.height);
