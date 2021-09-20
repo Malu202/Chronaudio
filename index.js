@@ -157,7 +157,7 @@ function draw(drawnData, offset) {
     let datapointsPerPixel = drawnData.length / canvas.width;
     let pixelShift = Math.round(offset / datapointsPerPixel);
 
-    let y = drawnData[drawnData.length - 1] / 128 + canvas.height / 2;
+    let y = canvas.height * drawnData[drawnData.length - 1] / 128;
     context2d.moveTo(0, y);
     context2d.lineTo(canvas.width, y);
     context2d.stroke();
