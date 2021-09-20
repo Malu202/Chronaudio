@@ -84,7 +84,7 @@ async function setup() {
         frameTime = performance.now();
         totalCalculationTime = performance.now() - totalCalculationTime;
         // requestAnimationFrame(analyze);
-        setTimeout(analyze, 1 / 60);
+        setTimeout(analyze, 1000 / 60);
     }
     analyze();
 }
