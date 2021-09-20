@@ -69,7 +69,7 @@ async function setup() {
             stopped = checkTriggers(drawnData, dataArray, offset);
             triggerTime = performance.now() - triggerTime;
             drawTime = performance.now();
-            draw(drawnData);
+            //draw(drawnData);
             drawTime = performance.now() - drawTime;
             let a = 0;
         } else {
