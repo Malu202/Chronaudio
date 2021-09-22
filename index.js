@@ -20,11 +20,7 @@ let drawnData;
 let dataArray;
 let stopped = false;
 
-try {
-    setup();
-} catch (error) {
-    alert(error)
-}
+setup();
 let minimumDelay;
 async function setup() {
     let stream = await navigator.mediaDevices.getUserMedia({
