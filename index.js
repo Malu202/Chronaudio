@@ -47,7 +47,7 @@ async function setup() {
     setupBuffers(analyser)
 
 
-    analyze();
+    requestAnimationFrame(analyze());
 }
 let frameTime = performance.now();
 
@@ -179,7 +179,7 @@ function draw(drawnData, offset) {
         context2d.clearRect(canvas.width - pixelShift, 0, pixelShift, canvas.height);
     } else context2d.fillRect(0, 0, canvas.width, canvas.height);
 
-    let x = canvas.width - pixelShift;
+    let x = canvas.width - pixelShift - 1;
     context2d.beginPath();
     for (let iGenau = drawnData.length - offset; iGenau < drawnData.length; iGenau += datapointsPerPixel) {
         let i = Math.round(iGenau);
