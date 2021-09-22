@@ -20,7 +20,6 @@ let drawnData;
 let dataArray;
 let stopped = false;
 
-setup();
 let minimumDelay;
 async function setup() {
     let stream = await navigator.mediaDevices.getUserMedia({
@@ -83,8 +82,6 @@ function analyze() {
     } else {
         let velocity = calculateVelocity();
         results.innerText = Math.round(velocity) + " ft/s, " + Math.round(velocity * 0.3048) + " m/s" + '\n' + results.innerText;
-        resumeButton.onclick = function () { resumeButton.onclick = null; resume(); analyze(); }
-        resumeButton.style.display = "inline-block";
         return;
     }
     let duration = performance.now() - frameTime;
@@ -94,7 +91,18 @@ function analyze() {
     //setTimeout(analyze, 1000 / 60);
 }
 
-
+resumeButton.onclick = function () {
+    if (stopped) {
+        resume();
+        analyze();
+    } else {
+        //initial start
+        setup();
+        resumeButton.style.display = "none";
+        resumeButton.innerText = "Resume";
+    }
+}
+resumeButton.style.display = "inline-block";
 
 function resume() {
     trigger1Index = null;
