@@ -27,13 +27,17 @@ try {
 }
 let minimumDelay;
 async function setup() {
-    let stream = await navigator.mediaDevices.getUserMedia({ video: false, audio: true });
+    let stream = await navigator.mediaDevices.getUserMedia({
+        video: false,
+        audio: true,
+        channelCount: 1,
+        volume: 1.0,
+        echoCancellation: false,
+        noiseSuppression: false
+    });
     canvas.width = canvas.clientWidth;
     canvas.height = canvas.clientHeight;
     ctx = new AudioContext();
-    // ctx = new AudioContext({
-    //     latencyHint: 0.02
-    // });
     console.log(ctx.baseLatency)
     mic = ctx.createMediaStreamSource(stream);
     analyser = ctx.createAnalyser();
@@ -152,6 +156,8 @@ function draw2(drawnData) {
 function draw(drawnData, offset) {
     context2d.fillStyle = 'rgb(200, 200, 200)';
     context2d.strokeStyle = 'rgb(0, 0, 0)';
+    context2d.lineWidth = 2;
+
     //context2d.fillRect(0, 0, canvas.width, canvas.height);
 
     let datapointsPerPixel = drawnData.length / canvas.width;
