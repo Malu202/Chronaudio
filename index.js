@@ -47,48 +47,54 @@ async function setup() {
     audioZoomLabel.innerText = audioZoom.value;
     setupBuffers(analyser)
 
-    function analyze() {
-        let totalCalculationTime = performance.now();
-        let analyseTime = performance.now();
-        analyser.getByteTimeDomainData(dataArray);
-        if (gainSlider.value != 1) {
-            for (let i = 0; i < dataArray.length; i++) {
-                dataArray[i] = (dataArray[i] - 128) * gainSlider.value + 128;
-            }
-        }
-        analyseTime = performance.now() - analyseTime;
-        let offsetTime = performance.now();
-        let offset = getNewBufferOffset(dataArray, drawnData.subarray(bufferLength * (zoom - 1)));
-        offsetTime = performance.now() - offsetTime;
-        drawnData.set(drawnData.subarray(offset), 0)
-        drawnData.set(dataArray, bufferLength * (zoom - 1));
 
-        let drawTime;
-        let triggerTime = performance.now();
-        if (!stopped) {
-            stopped = checkTriggers(drawnData, dataArray, offset);
-            triggerTime = performance.now() - triggerTime;
-            drawTime = performance.now();
-            //draw2(drawnData);
-            draw(drawnData, offset);
-            drawTime = performance.now() - drawTime;
-            let a = 0;
-        } else {
-            let velocity = calculateVelocity();
-            results.innerText = Math.round(velocity) + " ft/s, " + Math.round(velocity * 0.3048) + " m/s" + '\n' + results.innerText;
-            resumeButton.onclick = function () { resumeButton.onclick = null; resume(); analyze(); }
-            resumeButton.style.display = "inline-block";
-            return;
-        }
-        let duration = performance.now() - frameTime;
-        frameTime = performance.now();
-        totalCalculationTime = performance.now() - totalCalculationTime;
-        requestAnimationFrame(analyze);
-        //setTimeout(analyze, 1000 / 60);
-    }
     analyze();
 }
 let frameTime = performance.now();
+
+
+
+function analyze() {
+    let totalCalculationTime = performance.now();
+    let analyseTime = performance.now();
+    analyser.getByteTimeDomainData(dataArray);
+    if (gainSlider.value != 1) {
+        for (let i = 0; i < dataArray.length; i++) {
+            dataArray[i] = (dataArray[i] - 128) * gainSlider.value + 128;
+        }
+    }
+    analyseTime = performance.now() - analyseTime;
+    let offsetTime = performance.now();
+    let offset = getNewBufferOffset(dataArray, drawnData.subarray(bufferLength * (zoom - 1)));
+    offsetTime = performance.now() - offsetTime;
+    drawnData.set(drawnData.subarray(offset), 0)
+    drawnData.set(dataArray, bufferLength * (zoom - 1));
+
+    let drawTime;
+    let triggerTime = performance.now();
+    if (!stopped) {
+        stopped = checkTriggers(drawnData, dataArray, offset);
+        triggerTime = performance.now() - triggerTime;
+        drawTime = performance.now();
+        //draw2(drawnData);
+        draw(drawnData, offset);
+        drawTime = performance.now() - drawTime;
+        let a = 0;
+    } else {
+        let velocity = calculateVelocity();
+        results.innerText = Math.round(velocity) + " ft/s, " + Math.round(velocity * 0.3048) + " m/s" + '\n' + results.innerText;
+        resumeButton.onclick = function () { resumeButton.onclick = null; resume(); analyze(); }
+        resumeButton.style.display = "inline-block";
+        return;
+    }
+    let duration = performance.now() - frameTime;
+    frameTime = performance.now();
+    totalCalculationTime = performance.now() - totalCalculationTime;
+    requestAnimationFrame(analyze);
+    //setTimeout(analyze, 1000 / 60);
+}
+
+
 
 function resume() {
     trigger1Index = null;
