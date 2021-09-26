@@ -83,6 +83,7 @@ function analyze() {
     } else {
         let velocity = calculateVelocity();
         results.innerText = Math.round(velocity) + " ft/s, " + Math.round(velocity * 0.3048) + " m/s" + '\n' + results.innerText;
+        showStartButton();
         return;
     }
     let duration = performance.now() - frameTime;
@@ -103,7 +104,10 @@ resumeButton.onclick = function () {
         resumeButton.innerText = "Resume";
     }
 }
-resumeButton.style.display = "inline-block";
+function showStartButton() {
+    resumeButton.style.display = "inline-block";
+}
+showStartButton();
 
 function resume() {
     trigger1Index = null;
