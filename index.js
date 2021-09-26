@@ -1,3 +1,4 @@
+let AudioContext = window.AudioContext || window.webkitAudioContext || false;
 let canvas = document.getElementById("canvas");
 let context2d = canvas.getContext("2d");
 let audioZoom = document.getElementById("audioZoom");
