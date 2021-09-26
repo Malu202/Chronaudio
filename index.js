@@ -48,7 +48,7 @@ async function setup() {
     setupBuffers(analyser)
 
 
-    requestAnimationFrame(analyze());
+    requestAnimationFrame(analyze);
 }
 let frameTime = performance.now();
 
