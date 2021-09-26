@@ -11,6 +11,7 @@ let distanceInput = document.getElementById("distanceInput");
 let temperatureInput = document.getElementById("temperatureInput");
 let maxSpeedInput = document.getElementById("maxSpeedInput");
 let gainSlider = document.getElementById("gainSlider");
+let audioInputSelect = document.getElementById("audioInputSelect");
 
 let ctx, mic, analyser;
 
@@ -50,40 +51,40 @@ async function setup() {
 
     requestAnimationFrame(analyze);
 }
-let frameTime = performance.now();
 
 navigator.mediaDevices.enumerateDevices()
     .then(gotDevices)
 
-function gotDevices(d) {
-    console.log(d)
-};
+function gotDevices(deviceInfos) {
+    audioInputSelect.innerText = "";
+    for (var i = 0; i !== deviceInfos.length; ++i) {
+        var deviceInfo = deviceInfos[i];
+        var option = document.createElement('option');
+        option.value = deviceInfo.deviceId;
+        if (deviceInfo.kind === 'audioinput') {
+            option.text = deviceInfo.label ||
+                'Microphone ' + (audioInputSelect.length + 1);
+            audioInputSelect.appendChild(option);
+        }
+    };
+}
 
 function analyze() {
-    let totalCalculationTime = performance.now();
-    let analyseTime = performance.now();
     analyser.getByteTimeDomainData(dataArray);
     if (gainSlider.value != 1) {
         for (let i = 0; i < dataArray.length; i++) {
             dataArray[i] = (dataArray[i] - 128) * gainSlider.value + 128;
         }
     }
-    analyseTime = performance.now() - analyseTime;
-    let offsetTime = performance.now();
     let offset = getNewBufferOffset(dataArray, drawnData.subarray(bufferLength * (zoom - 1)));
     offsetTime = performance.now() - offsetTime;
     drawnData.set(drawnData.subarray(offset), 0)
     drawnData.set(dataArray, bufferLength * (zoom - 1));
 
-    let drawTime;
-    let triggerTime = performance.now();
     if (!stopped) {
         stopped = checkTriggers(drawnData, dataArray, offset);
-        triggerTime = performance.now() - triggerTime;
-        drawTime = performance.now();
         //draw2(drawnData);
         draw(drawnData, offset);
-        drawTime = performance.now() - drawTime;
         let a = 0;
     } else {
         let velocity = calculateVelocity();
@@ -91,9 +92,6 @@ function analyze() {
         showStartButton();
         return;
     }
-    let duration = performance.now() - frameTime;
-    frameTime = performance.now();
-    totalCalculationTime = performance.now() - totalCalculationTime;
     requestAnimationFrame(analyze);
     //setTimeout(analyze, 1000 / 60);
 }
