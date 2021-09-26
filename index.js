@@ -24,14 +24,16 @@ let stopped = false;
 
 let minimumDelay;
 async function setup() {
-    let stream = await navigator.mediaDevices.getUserMedia({
-        video: false,
-        audio: true,
-        channelCount: 1,
-        volume: 1.0,
-        echoCancellation: false,
-        noiseSuppression: false
-    });
+    let audioSource = audioInputSelect.value;
+    // let stream = await navigator.mediaDevices.getUserMedia({
+    //     video: false,
+    //     audio: true,
+    //     channelCount: 1,
+    //     volume: 1.0,
+    //     echoCancellation: false,
+    //     noiseSuppression: false
+    // });
+    let stream = await navigator.mediaDevices.getUserMedia({ audio: { deviceId: audioSource ? { exact: audioSource } : undefined } });
     canvas.width = canvas.clientWidth;
     canvas.height = canvas.clientHeight;
     ctx = new AudioContext();
