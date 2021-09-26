@@ -56,7 +56,7 @@ navigator.mediaDevices.enumerateDevices()
     .then(gotDevices)
 
 function gotDevices(d) {
-    console.log("hi")
+    console.log(d)
 };
 
 function analyze() {
