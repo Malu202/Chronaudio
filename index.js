@@ -52,7 +52,12 @@ async function setup() {
 }
 let frameTime = performance.now();
 
+navigator.mediaDevices.enumerateDevices()
+    .then(gotDevices)
 
+function gotDevices(d) {
+    console.log("hi")
+};
 
 function analyze() {
     let totalCalculationTime = performance.now();
