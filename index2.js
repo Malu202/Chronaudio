@@ -32,7 +32,8 @@ function setup() {
             } else {
                 node = context.createScriptProcessor(256, 2, 2);
             }
-            let sampleRate = context.sampleRate;
+            sampleRate = context.sampleRate;
+            calculateMinimumDelay();
             setupBuffers(node.bufferSize);
             // listen to the audio data, and record into the buffer
             node.onaudioprocess = function (e) {
