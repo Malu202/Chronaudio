@@ -25,15 +25,10 @@ let stopped = false;
 let minimumDelay;
 async function setup() {
     let audioSource = audioInputSelect.value;
-    // let stream = await navigator.mediaDevices.getUserMedia({
-    //     video: false,
-    //     audio: true,
-    //     channelCount: 1,
-    //     volume: 1.0,
-    //     echoCancellation: false,
-    //     noiseSuppression: false
-    // });
-    let stream = await navigator.mediaDevices.getUserMedia({ audio: { deviceId: audioSource ? { exact: audioSource } : undefined } });
+    let constraints = { video: false, audio: true }
+    if (audioSource != "auto") constraints = { audio: { deviceId: audioSource ? { exact: audioSource } : undefined } };
+
+    let stream = await navigator.mediaDevices.getUserMedia(constraints);
     canvas.width = canvas.clientWidth;
     canvas.height = canvas.clientHeight;
     ctx = new AudioContext();
@@ -58,7 +53,6 @@ navigator.mediaDevices.enumerateDevices()
     .then(gotDevices)
 
 function gotDevices(deviceInfos) {
-    audioInputSelect.innerText = "";
     for (var i = 0; i !== deviceInfos.length; ++i) {
         var deviceInfo = deviceInfos[i];
         var option = document.createElement('option');
