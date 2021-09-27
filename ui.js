@@ -66,5 +66,4 @@ for (let i = 0; i < inputs.length; i++) { inputs[i].addEventListener("change", s
 window.onload = function () {
     canvas.width = canvas.clientWidth;
     canvas.height = canvas.clientHeight;
-    calculateMinimumDelay();
 };

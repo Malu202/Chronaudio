@@ -36,6 +36,8 @@ async function setup() {
     analyser = ctx.createAnalyser();
 
     sampleRate = mic.context.sampleRate;
+    calculateMinimumDelay();
+
     mic.connect(analyser);
 
     audioZoom.addEventListener("change", function () { setupBuffers(analyser); });
