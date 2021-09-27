@@ -5,32 +5,31 @@ let stopped = false;
 let drawnData = new Float32Array();
 
 
-function setup() {
-    navigator.getUserMedia({ audio: true },
-        function (stream) {
-            let context = new AudioContext();
-            let source = context.createMediaStreamSource(stream);
+async function setup() {
+    let audioSource = audioInputSelect.value;
+    let constraints = { video: false, audio: true }
+    if (audioSource != "auto") constraints = { audio: { deviceId: audioSource ? { exact: audioSource } : undefined } };
 
-            if (!context.createScriptProcessor) {
-                node = context.createJavaScriptNode(4096, 2, 2);
-            } else {
-                node = context.createScriptProcessor(4096, 2, 2);
-            }
-            sampleRate = context.sampleRate;
-            calculateMinimumDelay();
-            setupBuffers(node.bufferSize);
+    let stream = await navigator.mediaDevices.getUserMedia(constraints);
+    let context = new AudioContext();
+    let source = context.createMediaStreamSource(stream);
 
-            node.onaudioprocess = function (e) {
-                onNewData(e.inputBuffer.getChannelData(0));
-            }
+    if (!context.createScriptProcessor) {
+        node = context.createJavaScriptNode(4096, 2, 2);
+    } else {
+        node = context.createScriptProcessor(4096, 2, 2);
+    }
+    sampleRate = context.sampleRate;
+    calculateMinimumDelay();
+    setupBuffers(node.bufferSize);
 
-            source.connect(node);
-            node.connect(context.destination);
-            drawLoop();
-        },
-        function (e) {
-            // do something about errors
-        });
+    node.onaudioprocess = function (e) {
+        onNewData(e.inputBuffer.getChannelData(0));
+    }
+
+    source.connect(node);
+    node.connect(context.destination);
+    drawLoop();
 }
 
 function setupBuffers(bufferSize) {
@@ -41,7 +40,7 @@ function setupBuffers(bufferSize) {
 function onNewData(newData) {
     if (stopped) return;
     let bufferLength = newData.length;
-    let offset = bufferLength - 1;
+    let offset = bufferLength;
 
     drawnData.set(drawnData.subarray(offset), 0)
     drawnData.set(newData, bufferLength * (zoom - 1));
@@ -51,7 +50,6 @@ function onNewData(newData) {
         let velocity = calculateVelocity();
         let totalTime = (trigger2Index - trigger1Index) / sampleRate;
 
-        let datapointsPerPixel = drawnData.length / canvas.width;
         let error = (totalTime - 60 / 240) * 1000;
 
         let resultString = Math.round(velocity) + " ft/s, " + Math.round(velocity * 0.3048) + " m/s, time measured: " + totalTime * 1000 + "ms";
