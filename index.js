@@ -1,18 +1,3 @@
-let AudioContext = window.AudioContext || window.webkitAudioContext || false;
-let canvas = document.getElementById("canvas");
-let context2d = canvas.getContext("2d");
-let audioZoom = document.getElementById("audioZoom");
-let audioZoomLabel = document.getElementById("audioZoomLabel");
-let trigger1Slider = document.getElementById("trigger1Slider");
-let trigger2Slider = document.getElementById("trigger2Slider");
-let results = document.getElementById("results");
-let resumeButton = document.getElementById("resumeButton");
-let distanceInput = document.getElementById("distanceInput");
-let temperatureInput = document.getElementById("temperatureInput");
-let maxSpeedInput = document.getElementById("maxSpeedInput");
-let gainSlider = document.getElementById("gainSlider");
-let audioInputSelect = document.getElementById("audioInputSelect");
-
 let ctx, mic, analyser;
 
 let zoom = 10;
