@@ -13,7 +13,7 @@ function gotDevices(deviceInfos) {
         }
     };
 }
-
+let minimumDelay;
 function calculateMinimumDelay() {
     let speedOfSound = 20.05 * Math.sqrt(273.15 + parseFloat(temperatureInput.value));
     let soundDelay = distanceInput.value / speedOfSound;
@@ -66,4 +66,5 @@ for (let i = 0; i < inputs.length; i++) { inputs[i].addEventListener("change", s
 window.onload = function () {
     canvas.width = canvas.clientWidth;
     canvas.height = canvas.clientHeight;
+    calculateMinimumDelay();
 };

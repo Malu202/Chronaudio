@@ -22,21 +22,20 @@ let drawnData;
 let dataArray;
 let stopped = false;
 
-let minimumDelay;
+
 async function setup() {
     let audioSource = audioInputSelect.value;
     let constraints = { video: false, audio: true }
     if (audioSource != "auto") constraints = { audio: { deviceId: audioSource ? { exact: audioSource } : undefined } };
 
     let stream = await navigator.mediaDevices.getUserMedia(constraints);
-   
+
     ctx = new AudioContext();
     console.log(ctx.baseLatency)
     mic = ctx.createMediaStreamSource(stream);
     analyser = ctx.createAnalyser();
 
     sampleRate = mic.context.sampleRate;
-    calculateMinimumDelay();
     mic.connect(analyser);
 
     audioZoom.addEventListener("change", function () { setupBuffers(analyser); });
