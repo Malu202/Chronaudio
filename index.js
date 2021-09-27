@@ -78,8 +78,8 @@ function analyze() {
 
     if (!stopped) {
         stopped = checkTriggers(drawnData, dataArray, offset);
-        //draw2(drawnData);
-        draw(drawnData, offset);
+        draw2(drawnData);
+        // draw(drawnData, offset);
         let a = 0;
     } else {
         let velocity = calculateVelocity();
