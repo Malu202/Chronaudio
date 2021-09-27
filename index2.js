@@ -14,6 +14,7 @@ let gainSlider = document.getElementById("gainSlider");
 let audioInputSelect = document.getElementById("audioInputSelect");
 
 let zoom = parseInt(audioZoom.value);
+let stopped = false;
 let drawnData = new Float32Array(),
     recBuffersR = new Float32Array();
 
@@ -43,7 +44,7 @@ function setup() {
                 drawnData.set(drawnData.subarray(offset), 0)
                 drawnData.set(newData, bufferLength * (zoom - 1));
 
-                checkTriggers(drawnData, newData, offset);
+                if (checkTriggers(drawnData, newData, offset)) stopped = true;
             }
 
             source.connect(node);
@@ -76,16 +77,16 @@ function checkTriggers(drawndata, sample, offset) {
     }
     if (trigger1Index == null) {
         for (let i = sample.length - offset - 1; i < sample.length; i++) {
-            let volume = Math.abs(sample[i] - 128);
-            if (volume > trigger1Slider.value * 128) {
+            let volume = Math.abs(sample[i]);
+            if (volume > trigger1Slider.value) {
                 trigger1Index = i + drawndata.length - sample.length;
                 break;
             }
         }
     } else if (trigger2Index == null) {
         for (let i = 0; i < sample.length; i++) {
-            let volume = Math.abs(sample[i] - 128);
-            if (volume > trigger2Slider.value * 128) {
+            let volume = Math.abs(sample[i]);
+            if (volume > trigger2Slider.value) {
                 let newTrigger = i + drawndata.length - sample.length;
                 if ((newTrigger - trigger1Index) > minimumDelay) {
                     trigger2Index = newTrigger;
@@ -100,6 +101,6 @@ function checkTriggers(drawndata, sample, offset) {
 
 function drawNew() {
     draw2(drawnData, true);
-    requestAnimationFrame(drawNew);
+    if (!stopped) requestAnimationFrame(drawNew);
 }
 
