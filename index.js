@@ -29,8 +29,7 @@ async function setup() {
     if (audioSource != "auto") constraints = { audio: { deviceId: audioSource ? { exact: audioSource } : undefined } };
 
     let stream = await navigator.mediaDevices.getUserMedia(constraints);
-    canvas.width = canvas.clientWidth;
-    canvas.height = canvas.clientHeight;
+   
     ctx = new AudioContext();
     console.log(ctx.baseLatency)
     mic = ctx.createMediaStreamSource(stream);
@@ -49,21 +48,7 @@ async function setup() {
     requestAnimationFrame(analyze);
 }
 
-navigator.mediaDevices.enumerateDevices()
-    .then(gotDevices)
 
-function gotDevices(deviceInfos) {
-    for (var i = 0; i !== deviceInfos.length; ++i) {
-        var deviceInfo = deviceInfos[i];
-        var option = document.createElement('option');
-        option.value = deviceInfo.deviceId;
-        if (deviceInfo.kind === 'audioinput') {
-            option.text = deviceInfo.label ||
-                'Microphone ' + (audioInputSelect.length + 1);
-            audioInputSelect.appendChild(option);
-        }
-    };
-}
 
 function analyze() {
     analyser.getByteTimeDomainData(dataArray);
@@ -122,91 +107,7 @@ function setupBuffers(analyser) {
     dataArray = new Uint8Array(bufferLength);
 };
 
-function draw2(drawnData) {
-    context2d.fillStyle = 'rgb(200, 200, 200)';
-    context2d.strokeStyle = 'rgb(0, 0, 0)';
 
-
-    context2d.fillRect(0, 0, canvas.width, canvas.height);
-    context2d.lineWidth = 2;
-
-    let datapointsPerPixel = drawnData.length / canvas.width;
-    let x = 0;
-    context2d.beginPath();
-
-    for (let iGenau = 0; iGenau < drawnData.length; iGenau += datapointsPerPixel) {
-        let i = Math.round(iGenau);
-
-        let v = 0;
-        for (let j = 0; j < datapointsPerPixel; j++) {
-            let volume = Math.abs(drawnData[i + j] - 128);
-            if (volume > v) v = volume;
-        }
-        v = v / 128.0;
-        const y = canvas.height - v * canvas.height;
-
-        if (i === 0) context2d.moveTo(x, y);
-        else context2d.lineTo(x, y);
-        x++;
-    }
-
-    context2d.lineTo(canvas.width, canvas.height);
-    context2d.stroke();
-
-    context2d.beginPath();
-    context2d.strokeStyle = 'rgb(0, 255, 0)';
-    context2d.moveTo(0, canvas.height * (1 - trigger1Slider.value));
-    context2d.lineTo(canvas.width, canvas.height * (1 - trigger1Slider.value));
-    if (trigger1Index != null) { drawTriggerAtIndex(trigger1Index, datapointsPerPixel); }
-    context2d.stroke();
-
-    context2d.beginPath();
-    context2d.strokeStyle = 'rgb(255, 0, 0)';
-    context2d.moveTo(0, canvas.height * (1 - trigger2Slider.value));
-    context2d.lineTo(canvas.width, canvas.height * (1 - trigger2Slider.value));
-    if (trigger2Index != null) { drawTriggerAtIndex(trigger2Index, datapointsPerPixel); }
-    context2d.stroke();
-}
-function draw(drawnData, offset) {
-    context2d.fillStyle = 'rgb(200, 200, 200)';
-    context2d.strokeStyle = 'rgb(0, 0, 0)';
-    context2d.lineWidth = 2;
-
-    //context2d.fillRect(0, 0, canvas.width, canvas.height);
-
-    let datapointsPerPixel = drawnData.length / canvas.width;
-    let pixelShift = Math.round(offset / datapointsPerPixel);
-
-    if (pixelShift < canvas.width) {
-        let imageData = context2d.getImageData(pixelShift, 0, canvas.width - pixelShift, canvas.height);
-        context2d.putImageData(imageData, 0, 0);
-        context2d.clearRect(canvas.width - pixelShift, 0, pixelShift, canvas.height);
-    } else context2d.fillRect(0, 0, canvas.width, canvas.height);
-
-    let x = canvas.width - pixelShift - 1;
-    context2d.beginPath();
-    for (let iGenau = drawnData.length - offset; iGenau < drawnData.length; iGenau += datapointsPerPixel) {
-        let i = Math.round(iGenau);
-
-        let v = 0;
-        for (let j = 0; j < datapointsPerPixel; j++) {
-            let volume = Math.abs(drawnData[i + j] - 128);
-            if (volume > v) v = volume;
-        }
-        v = v / 128.0;
-        const y = canvas.height - v * canvas.height;
-
-        if (i === 0) context2d.moveTo(x, y);
-        else context2d.lineTo(x, y);
-        x++;
-    }
-    //context2d.lineTo(canvas.width, canvas.height);
-    context2d.stroke();
-}
-function drawTriggerAtIndex(index, datapointsPerPixel) {
-    context2d.moveTo(index / datapointsPerPixel, 0);
-    context2d.lineTo(index / datapointsPerPixel, canvas.height);
-}
 let trigger1Index = null;
 let trigger2Index = null;
 function checkTriggers(drawndata, sample, offset) {
@@ -253,51 +154,5 @@ function getNewBufferOffset(newData, oldData) {
     return offset;
 }
 
-function calculateMinimumDelay() {
-    let speedOfSound = 20.05 * Math.sqrt(273.15 + parseFloat(temperatureInput.value));
-    let soundDelay = distanceInput.value / speedOfSound;
-    let totalTime = soundDelay + distanceInput.value / (maxSpeedInput.value * 0.3048);
-    minimumDelay = totalTime * sampleRate;
-}
-maxSpeedInput.addEventListener("change", calculateMinimumDelay)
 
-function calculateVelocity() {
-    let speedOfSound = 20.05 * Math.sqrt(273.15 + parseFloat(temperatureInput.value));
-    let soundDelay = distanceInput.value / speedOfSound;
-    let totalTime = (trigger2Index - trigger1Index) / sampleRate;
-    let arrowVelocity = distanceInput.value / (totalTime - soundDelay);
-    let arrowVelocityImperial = arrowVelocity * 3.28084;
-
-    console.log("Total time: " + totalTime);
-    return arrowVelocityImperial;
-}
 //console.log("Expected Total time: " + (1 / (231 / 60)))
-function saveInputValues() {
-    let settings = {
-        audioZoom: audioZoom.value,
-        trigger1Slider: trigger1Slider.value,
-        trigger2Slider: trigger2Slider.value,
-        distanceInput: distanceInput.value,
-        temperatureInput: temperatureInput.value,
-        maxSpeedInput: maxSpeedInput.value,
-        gainSlider: gainSlider.value
-    };
-
-    localStorage.setItem('ChronaudioSettings', JSON.stringify(settings));
-}
-
-function loadInputValues() {
-    let settings = JSON.parse(localStorage.getItem('ChronaudioSettings'));
-    if (!settings) return;
-    audioZoom.value = settings.audioZoom;
-    trigger1Slider.value = settings.trigger1Slider;
-    trigger2Slider.value = settings.trigger2Slider;
-    distanceInput.value = settings.distanceInput;
-    temperatureInput.value = settings.temperatureInput;
-    maxSpeedInput.value = settings.maxSpeedInput;
-    gainSlider.value = settings.gainSlider;
-}
-loadInputValues();
-
-let inputs = document.getElementsByTagName("input");
-for (let i = 0; i < inputs.length; i++) { inputs[i].addEventListener("change", saveInputValues) };
