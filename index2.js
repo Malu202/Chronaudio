@@ -24,8 +24,8 @@ setup();
 function setup() {
     navigator.getUserMedia({ audio: true },
         function (stream) {
-            var context = new AudioContext();
-            var source = context.createMediaStreamSource(stream);
+            let context = new AudioContext();
+            let source = context.createMediaStreamSource(stream);
 
             if (!context.createScriptProcessor) {
                 node = context.createJavaScriptNode(256, 2, 2);
@@ -51,6 +51,7 @@ function setup() {
                     let totalTime = (trigger2Index - trigger1Index) / sampleRate;
                     let velocity = calculateVelocity();
                     results.innerText = Math.round(velocity) + " ft/s, " + Math.round(velocity * 0.3048) + " m/s, time measured: " + totalTime + "s" + '\n' + results.innerText;
+                    node.disconnect();
                 }
             }
 
