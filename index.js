@@ -70,7 +70,11 @@ function analyze() {
     } else {
         let totalTime = (trigger2Index - trigger1Index) / sampleRate;
         let velocity = calculateVelocity();
-        results.innerText = Math.round(velocity) + " ft/s, " + Math.round(velocity * 0.3048) + " m/s, time measured: " + totalTime + "s" + '\n' + results.innerText;
+
+        let error = (totalTime - 60 / 240) * 1000;
+        let resultString = Math.round(velocity) + " ft/s, " + Math.round(velocity * 0.3048) + " m/s, time measured: " + totalTime * 1000 + "ms";
+        resultString += ", error: " + error + "ms";
+        results.innerText = resultString + '\n' + results.innerText;
         showStartButton();
         return;
     }

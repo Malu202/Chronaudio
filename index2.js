@@ -28,16 +28,16 @@ function setup() {
             let source = context.createMediaStreamSource(stream);
 
             if (!context.createScriptProcessor) {
-                node = context.createJavaScriptNode(256, 2, 2);
+                node = context.createJavaScriptNode(4096, 2, 2);
             } else {
-                node = context.createScriptProcessor(256, 2, 2);
+                node = context.createScriptProcessor(4096, 2, 2);
             }
             sampleRate = context.sampleRate;
             calculateMinimumDelay();
             setupBuffers(node.bufferSize);
             // listen to the audio data, and record into the buffer
             node.onaudioprocess = function (e) {
-
+                if (stopped) return;
                 let bufferLength = e.inputBuffer.getChannelData(0).length;
                 let offset = bufferLength - 1;
                 let newData = e.inputBuffer.getChannelData(0);
@@ -48,9 +48,19 @@ function setup() {
 
                 if (checkTriggers(drawnData, newData, offset)) {
                     stopped = true;
-                    let totalTime = (trigger2Index - trigger1Index) / sampleRate;
                     let velocity = calculateVelocity();
-                    results.innerText = Math.round(velocity) + " ft/s, " + Math.round(velocity * 0.3048) + " m/s, time measured: " + totalTime + "s" + '\n' + results.innerText;
+                    let totalTime = (trigger2Index - trigger1Index) / sampleRate;
+
+                    let datapointsPerPixel = drawnData.length / canvas.width;
+                    let error = (totalTime - 60 / 240) * 1000;
+                    context2d.beginPath();
+                    context2d.strokeStyle = 'rgb(0, 0, 255)';
+                    drawTriggerAtIndex(trigger1Index + (error * sampleRate / 1000) + 4096, datapointsPerPixel)
+                    context2d.stroke();
+
+                    let resultString = Math.round(velocity) + " ft/s, " + Math.round(velocity * 0.3048) + " m/s, time measured: " + totalTime * 1000 + "ms";
+                    resultString += ", error: " + error + "ms";
+                    results.innerText = resultString + '\n' + results.innerText;
                     node.disconnect();
                 }
             }
@@ -108,7 +118,8 @@ function checkTriggers(drawndata, sample, offset) {
 
 
 function drawNew() {
+    if (stopped) return;
     draw2(drawnData, true);
-    if (!stopped) requestAnimationFrame(drawNew);
+    requestAnimationFrame(drawNew);
 }
 

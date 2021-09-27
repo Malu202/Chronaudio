@@ -7,6 +7,7 @@ function draw2(drawnData, float) {
     context2d.lineWidth = 2;
 
     let datapointsPerPixel = drawnData.length / canvas.width;
+
     let x = 0;
     context2d.beginPath();
 
@@ -29,6 +30,7 @@ function draw2(drawnData, float) {
     context2d.moveTo(0, canvas.height * (1 - trigger1Slider.value));
     context2d.lineTo(canvas.width, canvas.height * (1 - trigger1Slider.value));
     if (trigger1Index != null) { drawTriggerAtIndex(trigger1Index, datapointsPerPixel); }
+    // if (trigger1Index != null) { drawTriggerAtIndex(trigger1Index + 0.01 * sampleRate, datapointsPerPixel); }
     context2d.stroke();
 
     context2d.beginPath();
