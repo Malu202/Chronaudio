@@ -46,7 +46,12 @@ function setup() {
                 drawnData.set(drawnData.subarray(offset), 0)
                 drawnData.set(newData, bufferLength * (zoom - 1));
 
-                if (checkTriggers(drawnData, newData, offset)) stopped = true;
+                if (checkTriggers(drawnData, newData, offset)) {
+                    stopped = true;
+                    let totalTime = (trigger2Index - trigger1Index) / sampleRate;
+                    let velocity = calculateVelocity();
+                    results.innerText = Math.round(velocity) + " ft/s, " + Math.round(velocity * 0.3048) + " m/s, time measured: " + totalTime + "s" + '\n' + results.innerText;
+                }
             }
 
             source.connect(node);
