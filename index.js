@@ -79,7 +79,6 @@ function analyze() {
         }
     }
     let offset = getNewBufferOffset(dataArray, drawnData.subarray(bufferLength * (zoom - 1)));
-    offsetTime = performance.now() - offsetTime;
     drawnData.set(drawnData.subarray(offset), 0)
     drawnData.set(dataArray, bufferLength * (zoom - 1));
 
