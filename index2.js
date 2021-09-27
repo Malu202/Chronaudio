@@ -42,6 +42,8 @@ function setup() {
 
                 drawnData.set(drawnData.subarray(offset), 0)
                 drawnData.set(newData, bufferLength * (zoom - 1));
+
+                checkTriggers(drawnData, newData, offset);
             }
 
             source.connect(node);
@@ -63,6 +65,39 @@ function setupBuffers(bufferSize) {
 
 let trigger1Index = null;
 let trigger2Index = null;
+function checkTriggers(drawndata, sample, offset) {
+    if (trigger1Index != null) {
+        trigger1Index -= offset;
+        if (trigger1Index < 0) { trigger1Index = null }
+    }
+    if (trigger2Index != null) {
+        trigger2Index -= offset;
+        if (trigger1Index < drawndata.length / 4) { return true }
+    }
+    if (trigger1Index == null) {
+        for (let i = sample.length - offset - 1; i < sample.length; i++) {
+            let volume = Math.abs(sample[i] - 128);
+            if (volume > trigger1Slider.value * 128) {
+                trigger1Index = i + drawndata.length - sample.length;
+                break;
+            }
+        }
+    } else if (trigger2Index == null) {
+        for (let i = 0; i < sample.length; i++) {
+            let volume = Math.abs(sample[i] - 128);
+            if (volume > trigger2Slider.value * 128) {
+                let newTrigger = i + drawndata.length - sample.length;
+                if ((newTrigger - trigger1Index) > minimumDelay) {
+                    trigger2Index = newTrigger;
+                    break;
+                }
+            }
+        }
+    }
+    return false;
+}
+
+
 function drawNew() {
     draw2(drawnData, true);
     requestAnimationFrame(drawNew);
