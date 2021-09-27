@@ -82,8 +82,9 @@ function analyze() {
         // draw(drawnData, offset);
         let a = 0;
     } else {
+        let totalTime = (trigger2Index - trigger1Index) / sampleRate;
         let velocity = calculateVelocity();
-        results.innerText = Math.round(velocity) + " ft/s, " + Math.round(velocity * 0.3048) + " m/s" + '\n' + results.innerText;
+        results.innerText = Math.round(velocity) + " ft/s, " + Math.round(velocity * 0.3048) + " m/s, time measured: " + totalTime + "s" + '\n' + results.innerText;
         showStartButton();
         return;
     }
