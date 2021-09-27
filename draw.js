@@ -43,7 +43,7 @@ function getMaxValueInRange(buffer, start, end, float) {
     let v = 0;
     if (float) {
         for (let j = 0; j < end; j++) {
-            let volume = Math.abs(buffer.cacheGet(start + j));
+            let volume = Math.abs(buffer[start + j]);
             if (volume > v) v = volume;
         }
     } else {

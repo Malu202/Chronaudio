@@ -1,22 +1,3 @@
-class CircularAudioBuffer {
-    constructor(length) {
-        this.cache = new Float32Array(length);
-        this.cache.offset = 0;
-        this.length = length;
-
-    }
-
-    cacheItem(item) {
-        this.cache[this.cache.offset++] = item;
-        this.cache.offset %= this.cache.length;
-    }
-    cacheGet(i) { // backwards, 0 is most recent
-        i = this.length - i;
-        return this.cache[(this.cache.offset - 1 - i + this.cache.length) % this.cache.length];
-    }
-}
-
-
 let AudioContext = window.AudioContext || window.webkitAudioContext || false;
 let canvas = document.getElementById("canvas");
 let context2d = canvas.getContext("2d");
@@ -33,7 +14,7 @@ let gainSlider = document.getElementById("gainSlider");
 let audioInputSelect = document.getElementById("audioInputSelect");
 
 let zoom = parseInt(audioZoom.value);
-let drawnData = new CircularAudioBuffer(),
+let drawnData = new Float32Array(),
     recBuffersR = new Float32Array();
 
 
@@ -46,9 +27,9 @@ function setup() {
             var source = context.createMediaStreamSource(stream);
 
             if (!context.createScriptProcessor) {
-                node = context.createJavaScriptNode(4096, 2, 2);
+                node = context.createJavaScriptNode(256, 2, 2);
             } else {
-                node = context.createScriptProcessor(4096, 2, 2);
+                node = context.createScriptProcessor(256, 2, 2);
             }
             setupBuffers(node.bufferSize);
             // listen to the audio data, and record into the buffer
@@ -59,12 +40,8 @@ function setup() {
                 let newData = e.inputBuffer.getChannelData(0);
 
 
-                // drawnData.set(drawnData.subarray(offset), 0)
-                // drawnData.set(newData, bufferLength * (zoom - 1));
-
-                for (let i = 0; i < newData.length; i++) {
-                    drawnData.cacheItem(newData[i]);
-                }
+                drawnData.set(drawnData.subarray(offset), 0)
+                drawnData.set(newData, bufferLength * (zoom - 1));
             }
 
             source.connect(node);
@@ -79,7 +56,7 @@ function setup() {
 
 function setupBuffers(bufferSize) {
     zoom = parseInt(audioZoom.value);
-    drawnData = new CircularAudioBuffer(bufferSize * zoom);
+    drawnData = new Float32Array(bufferSize * zoom);
     for (let i = 0; i < drawnData.length; i++) { drawnData[i] = 0; }
 };
 
