@@ -1,4 +1,4 @@
-function draw2(drawnData) {
+function draw2(drawnData, float) {
     context2d.fillStyle = 'rgb(200, 200, 200)';
     context2d.strokeStyle = 'rgb(0, 0, 0)';
 
@@ -13,12 +13,7 @@ function draw2(drawnData) {
     for (let iGenau = 0; iGenau < drawnData.length; iGenau += datapointsPerPixel) {
         let i = Math.round(iGenau);
 
-        let v = 0;
-        for (let j = 0; j < datapointsPerPixel; j++) {
-            let volume = Math.abs(drawnData[i + j] - 128);
-            if (volume > v) v = volume;
-        }
-        v = v / 128.0;
+        let v = getMaxValueInRange(drawnData, i, datapointsPerPixel, float)
         const y = canvas.height - v * canvas.height;
 
         if (i === 0) context2d.moveTo(x, y);
@@ -43,6 +38,24 @@ function draw2(drawnData) {
     if (trigger2Index != null) { drawTriggerAtIndex(trigger2Index, datapointsPerPixel); }
     context2d.stroke();
 }
+
+function getMaxValueInRange(buffer, start, end, float) {
+    let v = 0;
+    if (float) {
+        for (let j = 0; j < end; j++) {
+            let volume = Math.abs(buffer.cacheGet(start + j));
+            if (volume > v) v = volume;
+        }
+    } else {
+        for (let j = 0; j < end; j++) {
+            let volume = Math.abs(buffer[start + j] - 128);
+            if (volume > v) v = volume;
+        }
+        v = v / 128.0;
+    }
+    return v;
+}
+
 function draw(drawnData, offset) {
     context2d.fillStyle = 'rgb(200, 200, 200)';
     context2d.strokeStyle = 'rgb(0, 0, 0)';

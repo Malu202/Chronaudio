@@ -1,3 +1,22 @@
+class CircularAudioBuffer {
+    constructor(length) {
+        this.cache = new Float32Array(length);
+        this.cache.offset = 0;
+        this.length = length;
+
+    }
+
+    cacheItem(item) {
+        this.cache[this.cache.offset++] = item;
+        this.cache.offset %= this.cache.length;
+    }
+    cacheGet(i) { // backwards, 0 is most recent
+        i = this.length - i;
+        return this.cache[(this.cache.offset - 1 - i + this.cache.length) % this.cache.length];
+    }
+}
+
+
 let AudioContext = window.AudioContext || window.webkitAudioContext || false;
 let canvas = document.getElementById("canvas");
 let context2d = canvas.getContext("2d");
@@ -14,8 +33,10 @@ let gainSlider = document.getElementById("gainSlider");
 let audioInputSelect = document.getElementById("audioInputSelect");
 
 let zoom = parseInt(audioZoom.value);
-let drawnData = new Float32Array(),
+let drawnData = new CircularAudioBuffer(),
     recBuffersR = new Float32Array();
+
+
 
 setup();
 function setup() {
@@ -35,11 +56,15 @@ function setup() {
 
                 let bufferLength = e.inputBuffer.getChannelData(0).length;
                 let offset = bufferLength - 1;
-                let newData = make256(e.inputBuffer.getChannelData(0));
+                let newData = e.inputBuffer.getChannelData(0);
 
 
-                drawnData.set(drawnData.subarray(offset), 0)
-                drawnData.set(newData, bufferLength * (zoom - 1));
+                // drawnData.set(drawnData.subarray(offset), 0)
+                // drawnData.set(newData, bufferLength * (zoom - 1));
+
+                for (let i = 0; i < newData.length; i++) {
+                    drawnData.cacheItem(newData[i]);
+                }
             }
 
             source.connect(node);
@@ -54,7 +79,7 @@ function setup() {
 
 function setupBuffers(bufferSize) {
     zoom = parseInt(audioZoom.value);
-    drawnData = new Float32Array(bufferSize * zoom);
+    drawnData = new CircularAudioBuffer(bufferSize * zoom);
     for (let i = 0; i < drawnData.length; i++) { drawnData[i] = 0; }
 };
 
@@ -62,13 +87,7 @@ function setupBuffers(bufferSize) {
 let trigger1Index = null;
 let trigger2Index = null;
 function drawNew() {
-    draw2(drawnData);
+    draw2(drawnData, true);
     requestAnimationFrame(drawNew);
 }
 
-function make256(buffer) {
-    for (let i = 0; i < buffer.length; i++) {
-        buffer[i] = buffer[i] * 128 + 128;
-    }
-    return buffer;
-}
