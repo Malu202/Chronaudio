@@ -47,6 +47,8 @@ function onNewData(newData) {
 
     if (checkTriggers(drawnData, newData, offset)) {
         stopped = true;
+        showStartButton();
+
         let velocity = calculateVelocity();
         let totalTime = (trigger2Index - trigger1Index) / sampleRate;
 
@@ -55,10 +57,11 @@ function onNewData(newData) {
         let resultString = Math.round(velocity) + " ft/s, " + Math.round(velocity * 0.3048) + " m/s, time measured: " + totalTime * 1000 + "ms";
         resultString += ", error: " + error + "ms";
         results.innerText = resultString + '\n' + results.innerText;
-
-
     }
 }
+function resume() {
+    drawLoop();
+};
 
 let trigger1Index = null;
 let trigger2Index = null;
@@ -96,7 +99,7 @@ function checkTriggers(drawndata, sample, offset) {
 
 
 function drawLoop() {
-    if (stopped) return;
+    //if (stopped) return;
     draw2(drawnData, true);
     requestAnimationFrame(drawLoop);
 }

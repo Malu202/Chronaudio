@@ -67,28 +67,12 @@ function analyze() {
     //setTimeout(analyze, 1000 / 60);
 }
 
-resumeButton.onclick = function () {
-    if (stopped) {
-        resume();
-        analyze();
-    } else {
-        //initial start
-        setup();
-        resumeButton.style.display = "none";
-        resumeButton.innerText = "Resume";
-    }
-}
-function showStartButton() {
-    resumeButton.style.display = "inline-block";
-}
-showStartButton();
-
 function resume() {
-    trigger1Index = null;
-    trigger2Index = null;
-    stopped = false;
-    resumeButton.style.display = "none";
+    analyze();
 }
+
+
+
 function setupBuffers(analyser) {
     bufferLength = analyser.fftSize;
     zoom = audioZoom.value;

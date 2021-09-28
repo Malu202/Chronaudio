@@ -85,12 +85,21 @@ window.onload = function () {
 
 resumeButton.onclick = function () {
     if (stopped) {
+        reset();
         resume();
-        analyze();
     } else {
         //initial start
         setup();
         resumeButton.style.display = "none";
         resumeButton.innerText = "Resume";
     }
+}
+function reset() {
+    trigger1Index = null;
+    trigger2Index = null;
+    stopped = false;
+    resumeButton.style.display = "none";
+}
+function showStartButton() {
+    resumeButton.style.display = "inline-block";
 }
