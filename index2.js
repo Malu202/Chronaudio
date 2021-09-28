@@ -3,7 +3,6 @@
 let zoom = parseInt(audioZoom.value);
 let stopped = false;
 let dataHistory = new Float32Array();
-let drawnData = new Float32Array();
 let gainNode;
 
 async function setup() {
@@ -39,7 +38,6 @@ async function setup() {
 function setupBuffers(bufferSize) {
     zoom = parseInt(audioZoom.value);
     dataHistory = new Float32Array(bufferSize * zoom);
-    drawnData = new Float32Array(canvas.width);
     for (let i = 0; i < dataHistory.length; i++) { dataHistory[i] = 0; }
 };
 function onNewData(newData) {
@@ -49,15 +47,6 @@ function onNewData(newData) {
 
     dataHistory.set(dataHistory.subarray(offset), 0)
     dataHistory.set(newData, bufferLength * (zoom - 1));
-
-    let datapointsPerPixel = dataHistory.length / canvas.width;
-    let v = new Float32Array(newData.length / datapointsPerPixel);
-    for (let iGenau = 0; iGenau < newData.length; iGenau += datapointsPerPixel) {
-        let i = Math.round(iGenau);
-        v[Math.round(iGenau / datapointsPerPixel)] = getMaxValueInRange(newData, i, datapointsPerPixel, true)
-    }
-    drawnData.set(drawnData.subarray(v.length), 0);
-    drawnData.set(v, drawnData.length - v.length - 1);
 
     if (checkTriggers(dataHistory, newData, offset)) {
         stopped = true;
@@ -118,8 +107,7 @@ function checkTriggers(dataHistory, sample, offset) {
 
 function drawLoop() {
     //if (stopped) return;
-    // draw2(dataHistory, true);
-    draw2(drawnData, true);
+    draw2(dataHistory, true);
 
     requestAnimationFrame(drawLoop);
 }
