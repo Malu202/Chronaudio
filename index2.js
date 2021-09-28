@@ -2,6 +2,7 @@
 
 let zoom = parseInt(audioZoom.value);
 let stopped = false;
+let dataHistory = new Float32Array();
 let drawnData = new Float32Array();
 let gainNode;
 
@@ -37,18 +38,28 @@ async function setup() {
 
 function setupBuffers(bufferSize) {
     zoom = parseInt(audioZoom.value);
-    drawnData = new Float32Array(bufferSize * zoom);
-    for (let i = 0; i < drawnData.length; i++) { drawnData[i] = 0; }
+    dataHistory = new Float32Array(bufferSize * zoom);
+    drawnData = new Float32Array(canvas.width);
+    for (let i = 0; i < dataHistory.length; i++) { dataHistory[i] = 0; }
 };
 function onNewData(newData) {
     if (stopped) return;
     let bufferLength = newData.length;
     let offset = bufferLength;
 
-    drawnData.set(drawnData.subarray(offset), 0)
-    drawnData.set(newData, bufferLength * (zoom - 1));
+    dataHistory.set(dataHistory.subarray(offset), 0)
+    dataHistory.set(newData, bufferLength * (zoom - 1));
 
-    if (checkTriggers(drawnData, newData, offset)) {
+    let datapointsPerPixel = dataHistory.length / canvas.width;
+    let v = new Float32Array(newData.length / datapointsPerPixel);
+    for (let iGenau = 0; iGenau < newData.length; iGenau += datapointsPerPixel) {
+        let i = Math.round(iGenau);
+        v[Math.round(iGenau / datapointsPerPixel)] = getMaxValueInRange(newData, i, datapointsPerPixel, true)
+    }
+    drawnData.set(drawnData.subarray(v.length), 0);
+    drawnData.set(v, drawnData.length - v.length - 1);
+
+    if (checkTriggers(dataHistory, newData, offset)) {
         stopped = true;
         showStartButton();
 
@@ -72,20 +83,20 @@ gainSlider.addEventListener("change", function () {
 
 let trigger1Index = null;
 let trigger2Index = null;
-function checkTriggers(drawndata, sample, offset) {
+function checkTriggers(dataHistory, sample, offset) {
     if (trigger1Index != null) {
         trigger1Index -= offset;
         if (trigger1Index < 0) { trigger1Index = null }
     }
     if (trigger2Index != null) {
         trigger2Index -= offset;
-        if (trigger1Index < drawndata.length / 4) { return true }
+        if (trigger1Index < dataHistory.length / 4) { return true }
     }
     if (trigger1Index == null) {
         for (let i = sample.length - offset - 1; i < sample.length; i++) {
             let volume = Math.abs(sample[i]);
             if (volume > trigger1Slider.value) {
-                trigger1Index = i + drawndata.length - sample.length;
+                trigger1Index = i + dataHistory.length - sample.length;
                 break;
             }
         }
@@ -93,7 +104,7 @@ function checkTriggers(drawndata, sample, offset) {
         for (let i = 0; i < sample.length; i++) {
             let volume = Math.abs(sample[i]);
             if (volume > trigger2Slider.value) {
-                let newTrigger = i + drawndata.length - sample.length;
+                let newTrigger = i + dataHistory.length - sample.length;
                 if ((newTrigger - trigger1Index) > minimumDelay) {
                     trigger2Index = newTrigger;
                     break;
@@ -107,7 +118,9 @@ function checkTriggers(drawndata, sample, offset) {
 
 function drawLoop() {
     //if (stopped) return;
+    // draw2(dataHistory, true);
     draw2(drawnData, true);
+
     requestAnimationFrame(drawLoop);
 }
 
