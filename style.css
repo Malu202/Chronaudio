@@ -4,6 +4,7 @@ body {
 }
 
 #canvas {
+    width: 1px;
     height: 280px;
     flex: 1 0 auto;
 }
