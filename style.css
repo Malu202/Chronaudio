@@ -5,6 +5,7 @@ body {
 
 #canvas {
     height: 280px;
+    flex: 1 0 auto;
 }
 
 input[type=range][orient=vertical] {
