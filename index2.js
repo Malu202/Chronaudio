@@ -3,7 +3,7 @@
 let zoom = parseInt(audioZoom.value);
 let stopped = false;
 let drawnData = new Float32Array();
-
+let gainNode;
 
 async function setup() {
     let audioSource = audioInputSelect.value;
@@ -12,23 +12,26 @@ async function setup() {
 
     let stream = await navigator.mediaDevices.getUserMedia(constraints);
     let context = new AudioContext();
+    gainNode = context.createGain();
     let source = context.createMediaStreamSource(stream);
 
+    let scriptNode;
     if (!context.createScriptProcessor) {
-        node = context.createJavaScriptNode(4096, 2, 2);
+        scriptNode = context.createJavaScriptNode(4096, 2, 2);
     } else {
-        node = context.createScriptProcessor(4096, 2, 2);
+        scriptNode = context.createScriptProcessor(4096, 2, 2);
     }
     sampleRate = context.sampleRate;
     calculateMinimumDelay();
-    setupBuffers(node.bufferSize);
+    setupBuffers(scriptNode.bufferSize);
 
-    node.onaudioprocess = function (e) {
+    scriptNode.onaudioprocess = function (e) {
         onNewData(e.inputBuffer.getChannelData(0));
     }
 
-    source.connect(node);
-    node.connect(context.destination);
+    source.connect(gainNode);
+    gainNode.connect(scriptNode);
+    scriptNode.connect(context.destination);
     drawLoop();
 }
 
@@ -62,6 +65,10 @@ function onNewData(newData) {
 function resume() {
     drawLoop();
 };
+
+gainSlider.addEventListener("change", function () {
+    gainNode.gain.value = gainSlider.value;
+})
 
 let trigger1Index = null;
 let trigger2Index = null;
