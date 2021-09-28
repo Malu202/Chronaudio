@@ -54,8 +54,8 @@ function onNewData(newData) {
 
         let error = (totalTime - 60 / 240) * 1000;
 
-        let resultString = Math.round(velocity) + " ft/s, " + Math.round(velocity * 0.3048) + " m/s, time measured: " + totalTime * 1000 + "ms";
-        resultString += ", error: " + error + "ms";
+        let resultString = Math.round(velocity) + " ft/s, " + Math.round(velocity * 0.3048) + " m/s";
+        if (!minimalOutputCheckbox.checked) resultString += ", time measured: " + totalTime * 1000 + "ms, error: " + error + "ms";
         results.innerText = resultString + '\n' + results.innerText;
     }
 }

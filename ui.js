@@ -12,6 +12,7 @@ let temperatureInput = document.getElementById("temperatureInput");
 let maxSpeedInput = document.getElementById("maxSpeedInput");
 let gainSlider = document.getElementById("gainSlider");
 let audioInputSelect = document.getElementById("audioInputSelect");
+let minimalOutputCheckbox = document.getElementById("minimalOutputCheckbox");
 
 navigator.mediaDevices.enumerateDevices()
     .then(gotDevices)
@@ -56,7 +57,8 @@ function saveInputValues() {
         distanceInput: distanceInput.value,
         temperatureInput: temperatureInput.value,
         maxSpeedInput: maxSpeedInput.value,
-        gainSlider: gainSlider.value
+        gainSlider: gainSlider.value,
+        minimalOutputCheckbox: minimalOutputCheckbox.checked
     };
 
     localStorage.setItem('ChronaudioSettings', JSON.stringify(settings));
@@ -72,6 +74,7 @@ function loadInputValues() {
     temperatureInput.value = settings.temperatureInput;
     maxSpeedInput.value = settings.maxSpeedInput;
     gainSlider.value = settings.gainSlider;
+    minimalOutputCheckbox.checked = settings.minimalOutputCheckbox;
 }
 loadInputValues();
 
