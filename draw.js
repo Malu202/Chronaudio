@@ -42,6 +42,7 @@ function draw2(drawnData, float) {
 }
 
 function getMaxValueInRange(buffer, start, end, float) {
+    return buffer[start];
     let v = 0;
     if (float) {
         for (let j = 0; j < end; j++) {
