@@ -4,11 +4,18 @@ let zoom = parseInt(audioZoom.value);
 let stopped = false;
 let dataHistory = new Float32Array();
 let gainNode;
-let stream;
+let stream = null;
 let context;
 
 async function setup() {
-    await getAudio();
+    //await getAudio();
+    let audioSource = audioInputSelect.value;
+    let constraints = { video: false, audio: true }
+    if (audioSource != "auto") constraints = { audio: { deviceId: audioSource ? { exact: audioSource } : undefined } };
+
+    stream = await navigator.mediaDevices.getUserMedia(constraints);
+
+
     context = new AudioContext();
     gainNode = context.createGain();
     let source = context.createMediaStreamSource(stream);
@@ -38,8 +45,13 @@ async function getAudio() {
     let constraints = { video: false, audio: true }
     if (audioSource != "auto") constraints = { audio: { deviceId: audioSource ? { exact: audioSource } : undefined } };
 
-    stream = null;
-    stream = await navigator.mediaDevices.getUserMedia(constraints);
+    let newStream = await navigator.mediaDevices.getUserMedia(constraints);
+    if (!stream) stream = newStream;
+    else {
+        newStream.getTracks().forEach(function (track) {
+            stream.addTrack(track);
+        });
+    }
     console.log("audio running")
 }
 
@@ -60,7 +72,9 @@ function onNewData(newData) {
         stopped = true;
         stream.getTracks().forEach(function (track) {
             track.stop();
+            stream.removeTrack(track);
         });
+        context.close();
         showStartButton();
 
         let velocity = calculateVelocity();
@@ -74,8 +88,9 @@ function onNewData(newData) {
     }
 }
 function resume() {
-    drawLoop();
-    getAudio();
+    // drawLoop();
+    // getAudio();
+    setup();
 };
 
 gainSlider.addEventListener("change", function () {
