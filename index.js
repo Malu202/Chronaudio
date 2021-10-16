@@ -15,9 +15,9 @@ async function setup() {
 
     let scriptNode;
     if (!context.createScriptProcessor) {
-        scriptNode = context.createJavaScriptNode(0, 2, 2);
+        scriptNode = context.createJavaScriptNode(0, 1, 1);
     } else {
-        scriptNode = context.createScriptProcessor(0, 2, 2);
+        scriptNode = context.createScriptProcessor(0, 1, 1);
     }
     sampleRate = context.sampleRate;
     calculateMinimumDelay();
@@ -40,6 +40,7 @@ async function getAudio() {
 
     stream = null;
     stream = await navigator.mediaDevices.getUserMedia(constraints);
+    console.log("audio running")
 }
 
 function setupBuffers(bufferSize) {
@@ -57,9 +58,9 @@ function onNewData(newData) {
 
     if (checkTriggers(dataHistory, newData, offset)) {
         stopped = true;
-        // stream.getTracks().forEach(function (track) {
-        //     track.stop();
-        // });
+        stream.getTracks().forEach(function (track) {
+            track.stop();
+        });
         showStartButton();
 
         let velocity = calculateVelocity();
@@ -74,7 +75,7 @@ function onNewData(newData) {
 }
 function resume() {
     drawLoop();
-    //getAudio();
+    getAudio();
 };
 
 gainSlider.addEventListener("change", function () {
