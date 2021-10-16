@@ -5,10 +5,11 @@ let stopped = false;
 let dataHistory = new Float32Array();
 let gainNode;
 let stream;
+let context;
 
 async function setup() {
     await getAudio();
-    let context = new AudioContext();
+    context = new AudioContext();
     gainNode = context.createGain();
     let source = context.createMediaStreamSource(stream);
 
