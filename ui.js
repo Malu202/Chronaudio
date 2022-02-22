@@ -35,14 +35,12 @@ function calculateMinimumDelay() {
     let soundDelay = distanceInput.value / speedOfSound;
     let totalTime = soundDelay + distanceInput.value / (maxSpeedInput.value * 0.3048);
     minimumDelay = totalTime * sampleRate;
-    console.log("minimum delay: " + minimumDelay)
 }
 let maximumDelay;
 function calculateMaximumDelay() {
     let soundDelay = distanceInput.value / speedOfSound();
     let totalTime = soundDelay + distanceInput.value / (minSpeedInput.value * 0.3048);
     maximumDelay = totalTime * sampleRate;
-    console.log("maximum delay: " + maximumDelay);
 }
 function calculateDelays() {
     calculateMinimumDelay();
