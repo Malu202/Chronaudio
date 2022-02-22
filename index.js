@@ -1,12 +1,11 @@
 
 
-let zoom = parseInt(audioZoom.value);
 let stopped = false;
 let dataHistory = new Float32Array();
 let gainNode;
 let stream = null;
 let context;
-
+let sampleRate = null;
 async function setup() {
     //await getAudio();
     let audioSource = audioInputSelect.value;
@@ -27,7 +26,7 @@ async function setup() {
         scriptNode = context.createScriptProcessor(0, 1, 1);
     }
     sampleRate = context.sampleRate;
-    calculateMinimumDelay();
+    calculateDelays();
     setupBuffers(scriptNode.bufferSize);
 
     scriptNode.onaudioprocess = function (e) {
@@ -55,9 +54,9 @@ async function getAudio() {
     console.log("audio running")
 }
 
-function setupBuffers(bufferSize) {
-    zoom = parseInt(audioZoom.value);
-    dataHistory = new Float32Array(bufferSize * zoom);
+function setupBuffers(inputBufferSize) {
+    dataHistory = new Float32Array(maximumDelay);
+
     for (let i = 0; i < dataHistory.length; i++) { dataHistory[i] = 0; }
 };
 function onNewData(newData) {
@@ -66,7 +65,7 @@ function onNewData(newData) {
     let offset = bufferLength;
 
     dataHistory.set(dataHistory.subarray(offset), 0)
-    dataHistory.set(newData, bufferLength * (zoom - 1));
+    dataHistory.set(newData, dataHistory.length - bufferLength);
 
     if (checkTriggers(dataHistory, newData, offset)) {
         stopped = true;

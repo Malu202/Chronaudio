@@ -24,9 +24,6 @@
 
 
     </div>
-    <label id="gainSliderLabel" for="gainSlider">Input length: </label>
-    <input type="range" id="audioZoom" min="1" max="300" step="1" value="40">
-    <label id="audioZoomLabel" for="audioZoom"></label>
     <button id="resumeButton">Start</button>
 
 
@@ -39,10 +36,14 @@
         <label for="temperatureInput">Temperature [°C]</label>
     </div>
     <div>
+        <input type="number" name="minSpeedInput" id="minSpeedInput" value=140>
+        <label for="minSpeedInput">Minimum expected velocity [ft/s]</label>
+    </div>
+    <div>
         <input type="number" name="maxSpeedInput" id="maxSpeedInput" value=350>
         <label for="maxSpeedInput">Maximum expected velocity [ft/s]</label>
     </div>
-    <input type="checkbox" name="minimalOutputCheckbox" id="minimalOutputCheckbox">
+    <input type="checkbox" name="minimalOutputCheckbox" id="minimalOutputCheckbox" checked="true">
     <label for="minimalOutputCheckbox">Velocity only</label>
     <div id="results"></div>
 </body>

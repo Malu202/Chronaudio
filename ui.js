@@ -10,12 +10,12 @@ let resumeButton = document.getElementById("resumeButton");
 let distanceInput = document.getElementById("distanceInput");
 let temperatureInput = document.getElementById("temperatureInput");
 let maxSpeedInput = document.getElementById("maxSpeedInput");
+let minSpeedInput = document.getElementById("minSpeedInput");
 let gainSlider = document.getElementById("gainSlider");
 let audioInputSelect = document.getElementById("audioInputSelect");
 let minimalOutputCheckbox = document.getElementById("minimalOutputCheckbox");
 
-navigator.mediaDevices.enumerateDevices()
-    .then(gotDevices)
+navigator.mediaDevices.enumerateDevices().then(gotDevices)
 
 function gotDevices(deviceInfos) {
     for (var i = 0; i !== deviceInfos.length; ++i) {
@@ -35,8 +35,24 @@ function calculateMinimumDelay() {
     let soundDelay = distanceInput.value / speedOfSound;
     let totalTime = soundDelay + distanceInput.value / (maxSpeedInput.value * 0.3048);
     minimumDelay = totalTime * sampleRate;
+    console.log("minimum delay: " + minimumDelay)
 }
-maxSpeedInput.addEventListener("change", calculateMinimumDelay)
+let maximumDelay;
+function calculateMaximumDelay() {
+    let soundDelay = distanceInput.value / speedOfSound();
+    let totalTime = soundDelay + distanceInput.value / (minSpeedInput.value * 0.3048);
+    maximumDelay = totalTime * sampleRate;
+    console.log("maximum delay: " + maximumDelay);
+}
+function calculateDelays() {
+    calculateMinimumDelay();
+    calculateMaximumDelay();
+}
+temperatureInput.addEventListener("change", calculateDelays);
+distanceInput.addEventListener("change", calculateDelays);
+minSpeedInput.addEventListener("change", calculateDelays);
+maxSpeedInput.addEventListener("change", calculateDelays);
+
 
 function calculateVelocity() {
     let speedOfSound = 20.05 * Math.sqrt(273.15 + parseFloat(temperatureInput.value));
@@ -48,15 +64,19 @@ function calculateVelocity() {
     console.log("Total time: " + totalTime);
     return arrowVelocityImperial;
 }
+function speedOfSound() {
+    return 20.05 * Math.sqrt(273.15 + parseFloat(temperatureInput.value));
+}
+
 
 function saveInputValues() {
     let settings = {
-        audioZoom: audioZoom.value,
         trigger1Slider: trigger1Slider.value,
         trigger2Slider: trigger2Slider.value,
         distanceInput: distanceInput.value,
         temperatureInput: temperatureInput.value,
         maxSpeedInput: maxSpeedInput.value,
+        minSpeedInput: minSpeedInput.value,
         gainSlider: gainSlider.value,
         minimalOutputCheckbox: minimalOutputCheckbox.checked
     };
@@ -67,12 +87,12 @@ function saveInputValues() {
 function loadInputValues() {
     let settings = JSON.parse(localStorage.getItem('ChronaudioSettings'));
     if (!settings) return;
-    audioZoom.value = settings.audioZoom;
     trigger1Slider.value = settings.trigger1Slider;
     trigger2Slider.value = settings.trigger2Slider;
     distanceInput.value = settings.distanceInput;
     temperatureInput.value = settings.temperatureInput;
     maxSpeedInput.value = settings.maxSpeedInput;
+    minSpeedInput.value = settings.minSpeedInput;
     gainSlider.value = settings.gainSlider;
     minimalOutputCheckbox.checked = settings.minimalOutputCheckbox;
 }
